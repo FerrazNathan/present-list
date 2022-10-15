@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, View, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native';
 import Participant from '../../components/Participant';
 
@@ -6,20 +6,15 @@ import { styles } from './styles';
 
 export default function Home() {
 
-  const members = [
-    'Nathan Ferraz',
-    'Mariane Ferraz',
-    'Vinícius Ítalo',
-    'Beatriz Barbara',
-    'Marcelo Moraes',
-    'Karina Moraes',
-    'Andréa Santos',
-    'Rafael Nicácio',
-    'Larissa Nicácio'
-  ]
+  const [member, setMember] = useState<string[]>([])
+  const [memberName, setMemberName] = useState<string>('')
 
   function handleParticipantAdd() {
-    console.log('Adicionou')
+    if (member.includes(memberName)) {
+      return Alert.alert('Membro já existe', 'Já existe um membro cadastrado com esse nome')
+    }
+    setMember(prev => [...prev, memberName])
+    setMemberName('')
   }
 
   function handleParticipantRemove(name: string) {
@@ -30,7 +25,8 @@ export default function Home() {
       },
       {
         text: 'Confirmar',
-        onPress: () => Alert.alert(`${name} removido com sucesso`)
+        onPress: () => setMember(prev => prev.filter(member => member !== name))
+        // onPress: () => Alert.alert(`${name} removido com sucesso`)
       },
     ])
   }
@@ -38,12 +34,14 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <Text style={styles.eventName}>Célula 17</Text>
-      <Text style={styles.eventDate}>Sábado 16 de outubro de 2022</Text>
+      <Text style={styles.eventDate}>Sábado 15 de outubro de 2022</Text>
       <View style={styles.form}>
         <TextInput
           style={styles.input}
-          placeholder='Nome do participante'
+          placeholder='Nome do membro ou visitante'
           placeholderTextColor='#6B6B6B'
+          onChangeText={setMemberName}
+          value={memberName}
         />
 
         <TouchableOpacity
@@ -57,7 +55,7 @@ export default function Home() {
       </View>
 
       <FlatList
-        data={members}
+        data={member}
         keyExtractor={item => item}
         renderItem={({ item }) => (
           <Participant
